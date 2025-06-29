@@ -1,3 +1,4 @@
+
 import streamlit as st
 from checklist import tarefas, concluir_tarefa, concluidas, salvar_tarefas
 from convidados import adicionar_convidado, convidados
@@ -29,7 +30,7 @@ with col1:
     if st.button("Adicionar Convidado"):
         if nome_convidado:
             adicionar_convidado(nome_convidado)
-            st.experimental_rerun()
+            st.rerun()
 
 with col2:
     st.subheader("Convidados")
@@ -46,7 +47,7 @@ with col3:
     if st.button("Registrar Presente"):
         if nome_presente and presente:
             adicionar_presente(nome_presente, presente)
-            st.experimental_rerun()
+            st.rerun()
 
 with col4:
     st.subheader("Presentes Recebidos")
