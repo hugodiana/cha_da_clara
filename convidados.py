@@ -1,31 +1,25 @@
-import csv
 import os
 
-arquivo = "convidados.csv"
-convidados = []
+ARQUIVO = "convidados.csv"
 
-# Carrega convidados do CSV
 def carregar_convidados():
-    if os.path.exists(arquivo):
-        with open(arquivo, newline="", encoding="utf-8") as f:
-            reader = csv.reader(f)
-            for row in reader:
-                convidados.append(row[0])
+    if not os.path.exists(ARQUIVO): return []
+    with open(ARQUIVO, "r", encoding="utf-8") as f:
+        return [linha.strip() for linha in f if linha.strip()]
 
-# Salva convidados no CSV
-def salvar_convidado(nome):
-    with open(arquivo, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow([nome])
-
-carregar_convidados()
+def salvar_convidados(convidados):
+    with open(ARQUIVO, "w", encoding="utf-8") as f:
+        for nome in convidados:
+            f.write(nome + "\n")
 
 def adicionar_convidado(nome):
-    convidados.append(nome)
-    salvar_convidado(nome)
-    print(f"Convidado '{nome}' adicionado com sucesso!")
+    convidados = carregar_convidados()
+    if nome and nome not in convidados:
+        convidados.append(nome)
+        convidados.sort()
+        salvar_convidados(convidados)
 
-def listar_convidados():
-    print("\n==== LISTA DE CONVIDADOS ====")
-    for i, nome in enumerate(convidados):
-        print(f"{i+1}. {nome}")
+def remover_convidado(nome):
+    convidados = carregar_convidados()
+    convidados = [c for c in convidados if c != nome]
+    salvar_convidados(convidados)

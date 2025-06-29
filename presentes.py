@@ -1,31 +1,41 @@
 import csv
 import os
 
-arquivo = "presentes.csv"
-presentes = []
+ARQUIVO = "presentes.csv"
+CAMPOS = ['convidado', 'presente', 'agradecimento_enviado']
 
-# Carrega os presentes do CSV
 def carregar_presentes():
-    if os.path.exists(arquivo):
-        with open(arquivo, newline="", encoding="utf-8") as f:
-            reader = csv.reader(f)
-            for row in reader:
-                presentes.append({"convidado": row[0], "presente": row[1]})
+    """Carrega a lista de presentes do arquivo CSV."""
+    if not os.path.exists(ARQUIVO):
+        return []
+    with open(ARQUIVO, newline='', encoding='utf-8') as f:
+        # Usamos list() para carregar tudo em memória de uma vez
+        return list(csv.DictReader(f))
 
-# Salva um novo presente no CSV
-def salvar_presente(convidado, presente):
-    with open(arquivo, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow([convidado, presente])
-
-carregar_presentes()
+def salvar_presentes(presentes):
+    """Salva a lista completa de presentes no arquivo CSV."""
+    with open(ARQUIVO, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=CAMPOS)
+        writer.writeheader()
+        writer.writerows(presentes)
 
 def adicionar_presente(convidado, presente):
-    presentes.append({"convidado": convidado, "presente": presente})
-    salvar_presente(convidado, presente)
-    print(f"Presente registrado: {convidado} deu '{presente}'.")
+    """Adiciona um novo presente à lista."""
+    presentes = carregar_presentes()
+    presentes.append({'convidado': convidado, 'presente': presente, 'agradecimento_enviado': 'Não'})
+    salvar_presentes(presentes)
 
-def listar_presentes():
-    print("\n==== PRESENTES RECEBIDOS ====")
-    for i, p in enumerate(presentes):
-        print(f"{i+1}. {p['convidado']} - {p['presente']}")
+def remover_presente(indice):
+    """Remove um presente da lista pelo seu índice."""
+    presentes = carregar_presentes()
+    if 0 <= indice < len(presentes):
+        presentes.pop(indice)
+        salvar_presentes(presentes)
+
+def atualizar_status_agradecimento(indice, status):
+    """Atualiza o status de 'agradecimento_enviado' para um presente específico."""
+    presentes = carregar_presentes()
+    if 0 <= indice < len(presentes):
+        # Converte o status booleano (True/False) para a string "Sim" ou "Não"
+        presentes[indice]['agradecimento_enviado'] = "Sim" if status else "Não"
+        salvar_presentes(presentes)
